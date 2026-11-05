@@ -20,6 +20,7 @@ jobs:
         cmake -B build -G "Ninja" `
           -DCMAKE_BUILD_TYPE=Release `
           -DBUILD_SHARED_LIBS=OFF `
+          -DLLAMA_OPENSSL=OFF `
           -DLLAMA_CURL=OFF `
           -DLLAMA_BUILD_TESTS=OFF `
           -DLLAMA_BUILD_EXAMPLES=OFF `
