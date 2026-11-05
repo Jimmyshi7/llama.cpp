@@ -34,7 +34,7 @@ jobs:
 
     - name: Package Artifacts
       run: |
-        run: 7z a llama-server-static-win-x64.zip .\build\bin\*
+        7z a llama-server-static-win-x64.zip .\build\bin\*
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
