@@ -25,6 +25,7 @@ jobs:
             -DLLAMA_CURL=OFF `
             -DLLAMA_BUILD_TESTS=OFF `
             -DLLAMA_BUILD_BENCHMARKS=OFF
+            -DLLAMA_BUILD_BORINGSSL=ON  # <-- 添加这一行
 
       - name: Build
         run: cmake --build build --config Release -j $env:NUMBER_OF_PROCESSORS
@@ -32,14 +33,6 @@ jobs:
       - name: Package Artifacts
         run: |
           7z a -snl llama-bin-win-cpu-x64.zip .\build\bin\*
-
-      - name: Copy OpenSSL DLLs (Windows)
-        shell: pwsh
-        run: |
-          $gitBin = "C:\Program Files\Git\mingw64\bin"
-          $dest = ".\build\bin"
-          Copy-Item "$gitBin\libssl-3-x64.dll" -Destination $dest
-          Copy-Item "$gitBin\libcrypto-3-x64.dll" -Destination $dest
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
