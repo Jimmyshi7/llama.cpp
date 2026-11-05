@@ -24,8 +24,8 @@ jobs:
             -DBUILD_SHARED_LIBS=OFF `
             -DLLAMA_CURL=OFF `
             -DLLAMA_BUILD_TESTS=OFF `
-            -DLLAMA_BUILD_BENCHMARKS=OFF
-            -DLLAMA_BUILD_BORINGSSL=ON  # <-- 添加这一行
+            -DLLAMA_BUILD_BENCHMARKS=OFF  `
+            -DLLAMA_BUILD_BORINGSSL=ON
 
       - name: Build
         run: cmake --build build --config Release -j $env:NUMBER_OF_PROCESSORS
