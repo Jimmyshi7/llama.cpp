@@ -19,11 +19,12 @@ jobs:
 
       - name: Configure CMake
         run: |
+          # 跳过测试和基准测试的编译
           cmake -B build -G "Ninja" -DCMAKE_BUILD_TYPE=Release `
             -DBUILD_SHARED_LIBS=OFF `
             -DLLAMA_CURL=OFF `
-            -DLLAMA_BUILD_TESTS=OFF `         # 添加这一行
-            -DLLAMA_BUILD_BENCHMARKS=OFF      # 可选，同时跳过基准测试
+            -DLLAMA_BUILD_TESTS=OFF `
+            -DLLAMA_BUILD_BENCHMARKS=OFF
 
       - name: Build
         run: cmake --build build --config Release -j $env:NUMBER_OF_PROCESSORS
