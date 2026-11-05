@@ -28,9 +28,7 @@ jobs:
           -DGGML_OPENMP=OFF `
           -DLLAMA_STATIC=ON `
           -DGGML_NATIVE=OFF `
-          -DLLAMA_OPENSSL=OFF `
-          -DLLAMA_SERVER_SSL=OFF `
-          -DLLAMA_HTTPLIB=OFF `
+          -DLLAMA_BUILD_BORINGSSL=ON `
           -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded
 
     - name: Build
