@@ -29,6 +29,10 @@ jobs:
           -DGGML_NATIVE=OFF `
           -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded
 
+    - name: Package Artifacts
+      run: |
+        7z a -snl llama-bin-win-cpu-x64.zip .\build\bin\*
+
     - name: Build
       run: cmake --build build --config Release -j
 
