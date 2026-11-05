@@ -1,57 +1,39 @@
-name: Build llama-server (Static, Minimal, Win10)
+name: Build llama.cpp (Windows Static)
 
 on:
   workflow_dispatch:
+  push:
+    branches: [ master ]
 
 jobs:
-  build-static-server:
+  build:
     runs-on: windows-latest
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-      - name: Setup MSVC
-        uses: ilammy/msvc-dev-cmd@v1
-        with:
-          arch: x64
+    - name: Setup MSVC
+      uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Configure CMake (Fully Static, Minimal, Win10 Compatible)
-        shell: pwsh
-        run: |
-          cmake -B build -G "Ninja" -DCMAKE_BUILD_TYPE=Release `
-            -DBUILD_SHARED_LIBS=OFF `
-            -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded `
-            -DGGML_NATIVE=OFF `
-            -DLLAMA_BUILD_SERVER=ON `
-            -DLLAMA_BUILD_APP=OFF `
-            -DLLAMA_BUILD_EXAMPLES=OFF `
-            -DLLAMA_BUILD_WEBUI=OFF `
-            -DLLAMA_BUILD_UI=OFF `
-            -DLLAMA_BUILD_TOOLS=OFF `
-            -DLLAMA_BUILD_TESTS=OFF `
-            -DLLAMA_SERVER_SSL=OFF `
-            -DLLAMA_OPENSSL=OFF `
-            -DLLAMA_BUILD_BORINGSSL=OFF `
-            -DLLAMA_CURL=OFF
+    - name: Configure CMake
+      run: |
+        cmake -B build -G "Ninja" `
+          -DCMAKE_BUILD_TYPE=Release `
+          -DBUILD_SHARED_LIBS=OFF `
+          -DLLAMA_CURL=OFF `
+          -DLLAMA_BUILD_TESTS=OFF `
+          -DLLAMA_BUILD_EXAMPLES=OFF `
+          -DLLAMA_BUILD_SERVER=ON `
+          -DGGML_OPENMP=OFF `
+          -DLLAMA_STATIC=ON `
+          -DGGML_NATIVE=OFF `
+          -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded
 
-      - name: Build llama-server only
-        shell: pwsh
-        run: cmake --build build --target llama-server --config Release -j $env:NUMBER_OF_PROCESSORS
+    - name: Build
+      run: cmake --build build --config Release -j
 
-      - name: Package only llama-server.exe
-        shell: pwsh
-        run: |
-          New-Item -ItemType Directory -Path .\dist -Force
-          if (Test-Path .\build\bin\llama-server.exe) {
-            Copy-Item .\build\bin\llama-server.exe -Destination .\dist\
-          } else {
-            Write-Error "llama-server.exe not found in build/bin"
-            exit 1
-          }
-          Compress-Archive -Path .\dist\llama-server.exe -DestinationPath .\llama-server-static-win-x64.zip
-
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: llama-server-static-win-x64
-          path: .\llama-server-static-win-x64.zip
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: llama.cpp-windows-static
+        path: build/bin/Release/*
