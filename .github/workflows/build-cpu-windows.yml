@@ -1,41 +1,50 @@
-name: Build llama.cpp (Windows)
+name: Build llama-server (Static, Minimal, No DLL Dependencies)
 
 on:
-  workflow_dispatch: # 支持在 GitHub Actions 页面手动触发
-  push:
-    branches: [ master ] # 当 main 分支有推送时自动触发，可按需修改
+  workflow_dispatch: # 仅手动触发
 
 jobs:
-  build-windows-cpu:
-    runs-on: windows-latest # GitHub 提供的 Windows Server 运行器
+  build-static-server:
+    runs-on: windows-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Setup MSVC
-        uses: ilammy/msvc-dev-cmd@v1 # 配置 Visual Studio 的 C++ 编译环境
+        uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: x64
 
-      - name: Configure CMake
+      - name: Configure CMake (Fully Static, Minimal)
+        shell: pwsh
         run: |
-          # 跳过测试和基准测试的编译
           cmake -B build -G "Ninja" -DCMAKE_BUILD_TYPE=Release `
             -DBUILD_SHARED_LIBS=OFF `
-            -DLLAMA_CURL=OFF `
+            -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded `
+            -DLLAMA_BUILD_SERVER=ON `
+            -DLLAMA_BUILD_WEBUI=OFF `
+            -DLLAMA_BUILD_UI=OFF `
+            -DLLAMA_BUILD_EXAMPLES=OFF `
+            -DLLAMA_BUILD_TOOLS=OFF `
             -DLLAMA_BUILD_TESTS=OFF `
-            -DLLAMA_BUILD_BENCHMARKS=OFF  `
-            -DLLAMA_BUILD_BORINGSSL=ON
+            -DLLAMA_SERVER_SSL=OFF `
+            -DLLAMA_OPENSSL=OFF `
+            -DLLAMA_BUILD_BORINGSSL=OFF `
+            -DLLAMA_CURL=OFF
 
-      - name: Build
-        run: cmake --build build --config Release -j $env:NUMBER_OF_PROCESSORS
+      - name: Build llama-server only
+        shell: pwsh
+        run: cmake --build build --target llama-server --config Release -j $env:NUMBER_OF_PROCESSORS
 
-      - name: Package Artifacts
+      - name: Package Artifact (single exe)
+        shell: pwsh
         run: |
-          7z a -snl llama-bin-win-cpu-x64.zip .\build\bin\*
+          New-Item -ItemType Directory -Path .\dist -Force
+          Copy-Item .\build\bin\llama-server.exe -Destination .\dist\
+          Compress-Archive -Path .\dist\llama-server.exe -DestinationPath .\llama-server-static-win-x64.zip
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: llama-bin-win-cpu-x64
-          path: llama-bin-win-cpu-x64.zip
+          name: llama-server-static-win-x64
+          path: .\llama-server-static-win-x64.zip
