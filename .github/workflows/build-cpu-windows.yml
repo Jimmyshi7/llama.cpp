@@ -1,7 +1,7 @@
 name: Build llama-server (Static, Minimal, Win10)
 
 on:
-  workflow_dispatch: # 仅支持手动触发，在 Actions 页面点击运行
+  workflow_dispatch:
 
 jobs:
   build-static-server:
@@ -23,7 +23,8 @@ jobs:
             -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded `
             -DGGML_NATIVE=OFF `
             -DLLAMA_BUILD_SERVER=ON `
-            -DLLAMA_BUILD_EXAMPLES=ON `
+            -DLLAMA_BUILD_APP=OFF `
+            -DLLAMA_BUILD_EXAMPLES=OFF `
             -DLLAMA_BUILD_WEBUI=OFF `
             -DLLAMA_BUILD_UI=OFF `
             -DLLAMA_BUILD_TOOLS=OFF `
@@ -33,9 +34,9 @@ jobs:
             -DLLAMA_BUILD_BORINGSSL=OFF `
             -DLLAMA_CURL=OFF
 
-      - name: Build all (ensures llama-server is compiled)
+      - name: Build llama-server only
         shell: pwsh
-        run: cmake --build build --config Release -j $env:NUMBER_OF_PROCESSORS
+        run: cmake --build build --target llama-server --config Release -j $env:NUMBER_OF_PROCESSORS
 
       - name: Package only llama-server.exe
         shell: pwsh
