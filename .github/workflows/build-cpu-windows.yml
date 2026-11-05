@@ -1,3 +1,4 @@
+
 name: Build llama.cpp (Windows Static)
 
 on:
@@ -20,7 +21,6 @@ jobs:
         cmake -B build -G "Ninja" `
           -DCMAKE_BUILD_TYPE=Release `
           -DBUILD_SHARED_LIBS=OFF `
-          -DLLAMA_OPENSSL=OFF `
           -DLLAMA_CURL=OFF `
           -DLLAMA_BUILD_TESTS=OFF `
           -DLLAMA_BUILD_EXAMPLES=OFF `
@@ -28,6 +28,9 @@ jobs:
           -DGGML_OPENMP=OFF `
           -DLLAMA_STATIC=ON `
           -DGGML_NATIVE=OFF `
+          -DLLAMA_OPENSSL=OFF `
+          -DLLAMA_SERVER_SSL=OFF `
+          -DLLAMA_HTTPLIB=OFF `
           -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded
 
     - name: Build
